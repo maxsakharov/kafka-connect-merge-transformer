@@ -1,0 +1,12 @@
+# IntelliJ data
+*.iml
+.idea/
+.ipr
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# Maven
+target/
