@@ -85,6 +85,36 @@ public class MergeTransformerTest {
       assertEquals("34.101,-118.343", resStruct.get("merged_a_b"));
    }
 
+    @Test
+    public void shouldMergeNullValueWithSchema() {
+        MergeTransformer<SinkRecord> transformer = new MergeTransformer<>();
+
+        Schema keySchema = SchemaBuilder.string();
+
+        Schema valSchema = SchemaBuilder.struct();
+        ((SchemaBuilder) valSchema).field("a", Schema.OPTIONAL_FLOAT64_SCHEMA);
+        ((SchemaBuilder) valSchema).field("b", Schema.FLOAT64_SCHEMA);
+
+        Struct value = new Struct(valSchema);
+        value.put("a", null);
+        value.put("b", 123.01);
+
+        SinkRecord record = new SinkRecord("test", 1, keySchema, "key", valSchema, value, 100);
+
+        Map<String, String> config = new HashMap<>();
+        config.put("fields", "a,b");
+        config.put("merged.name", "merged_a_b");
+
+        transformer.configure(config);
+        SinkRecord result = transformer.apply(record);
+
+        Struct resStruct = (Struct) result.value();
+
+        assertEquals(null, resStruct.get("a"));
+        assertEquals(123.01, resStruct.get("b"));
+        assertEquals("123.01", resStruct.get("merged_a_b"));
+    }
+
    @Test
    public void shouldMergeValuesWithMap() {
       MergeTransformer<SinkRecord> transformer = new MergeTransformer<>();

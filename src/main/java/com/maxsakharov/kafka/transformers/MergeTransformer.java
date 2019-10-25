@@ -75,7 +75,7 @@ public class MergeTransformer<R extends ConnectRecord<R>> implements Transformat
             String currPrefix = (prefix == null ? "" : prefix + ".") + fieldName;
             if (fields.get(fieldName) instanceof Map) {
                 populateValues(values, (Map<String, Object>) fields.get(fieldName), currPrefix);
-            } else if (fieldsToMerge.contains(currPrefix)) {
+            } else if (fieldsToMerge.contains(currPrefix) && fields.get(fieldName) != null) {
                 values.add(String.valueOf(fields.get(fieldName)));
             }
         }
@@ -110,7 +110,7 @@ public class MergeTransformer<R extends ConnectRecord<R>> implements Transformat
             String currPrefix = (prefix == null ? "" : prefix + ".") + field.name();
             if (field.schema().type() == SchemaBuilder.struct().type()) {
                 populateValues(values, field.schema().fields(), (Struct) value.get(field.name()), currPrefix);
-            } else if (fieldsToMerge.contains(currPrefix)) {
+            } else if (fieldsToMerge.contains(currPrefix) && value.get(field.name()) != null ) {
                 values.add(String.valueOf(value.get(field.name())));
             }
         }
