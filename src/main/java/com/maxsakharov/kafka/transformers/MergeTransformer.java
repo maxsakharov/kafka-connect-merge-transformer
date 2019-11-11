@@ -13,6 +13,8 @@ import org.apache.kafka.connect.transforms.Transformation;
 import org.apache.kafka.connect.transforms.util.Requirements;
 import org.apache.kafka.connect.transforms.util.SchemaUtil;
 import org.apache.kafka.connect.transforms.util.SimpleConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,6 +26,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class MergeTransformer<R extends ConnectRecord<R>> implements Transformation<R> {
+
+    private static final Logger log = LoggerFactory.getLogger(MergeTransformer.class);
 
     private static final String FIELDS_CONFIG = "fields";
     private static final String FIELDS_DOC = "Fields to merge";
@@ -102,7 +106,9 @@ public class MergeTransformer<R extends ConnectRecord<R>> implements Transformat
 
         updatedValue.put(mergedField, strip(mergedFieldVal));
 
-        return this.newRecord(record, updatedSchema, updatedValue);
+        R newRecord = this.newRecord(record, updatedSchema, updatedValue);
+        log.info("New Record: " + strip(newRecord.toString()));
+        return newRecord;
     }
 
     private void populateValues(List<String> values, List<Field> fields, Struct value, String prefix) {
